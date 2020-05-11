@@ -1,4 +1,4 @@
-package com.example.androidkotlinassignment.ui.main
+package com.example.androidkotlinassignment.viewmodels
 
 import androidx.lifecycle.ViewModel
 

@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">Android Kotlin Assignment</string>
+    <string name="app_name">Facts</string>
+
+    <string name="default_description">No description available</string>
+
+    <string name="default_title">No Title</string>
+    <string name="api_server">dl.dropboxusercontent.com</string>
+    <string name="factImageDescription">articleImage</string>
+    <string name="imageMore">More</string>
+    <string name="repository">respository</string>
 </resources>
