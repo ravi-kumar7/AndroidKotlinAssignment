@@ -1,0 +1,2 @@
+rootProject.name='Android Kotlin Assignment'
+include ':app'
