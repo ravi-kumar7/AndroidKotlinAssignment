@@ -1,35 +1,24 @@
 package com.example.androidkotlinassignment.database
 
-import androidx.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.example.androidkotlinassignment.models.Fact
-import com.example.androidkotlinassignment.models.FactCategoryDB
+import com.example.androidkotlinassignment.models.FactCategory
 
 @Dao
 interface FactDAO{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFact(Fact: Fact)
 
-    @Query("select * from facts where sectionId=:id order by title")
-    fun allFacts(id:String): List<Fact>
+    @Query("select * from facts ")
+    fun allFacts(): LiveData<List<Fact>>
 
-    @Query("select title from Facts where title=:Fact order by title")
-    fun findFact(Fact:String):String
-
-    @Update
-    fun update(Fact: Fact)
-
-    @Delete
-    fun delete(Fact: Fact)
-
-    @Query("select id, title from sections")
-    fun getSection(): FactCategoryDB
+    @Query("select id, title from categories")
+    fun getFactCategory(): LiveData<FactCategory>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSection(factCategoryDB: FactCategoryDB)
-
-    @Update
-    fun update(factCategoryDB: FactCategoryDB)
-
-    @Delete
-    fun delete(factCategoryDB: FactCategoryDB)
+    fun insertSection(factCategory: FactCategory)
 }

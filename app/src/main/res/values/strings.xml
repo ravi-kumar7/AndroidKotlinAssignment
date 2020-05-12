@@ -1,11 +1,16 @@
 <resources>
     <string name="app_name">Facts</string>
 
+    <string name="default_title">No title</string>
     <string name="default_description">No description available</string>
-
-    <string name="default_title">No Title</string>
     <string name="api_server">dl.dropboxusercontent.com</string>
     <string name="factImageDescription">articleImage</string>
     <string name="imageMore">More</string>
-    <string name="repository">respository</string>
+    <string name="sharedPrefs">preferences</string>
+    <string name="firstTimeDBLoaded">firstTimeDBLoaded</string>
+    <string name="networkConnectivityError">Unable to connect to server.</string>
+    <string name="dataSyncSuccess">Data synced with the server.</string>
+    <string name="loading">loading…</string>
+    <string name="no_data">No data.</string>
+    <string name="repository">repository</string>
 </resources>

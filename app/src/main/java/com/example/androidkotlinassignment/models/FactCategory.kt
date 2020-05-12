@@ -1,5 +1,7 @@
 package com.example.androidkotlinassignment.models
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class FactCategory(var title:String, val facts:List<Fact>) {
-}
+@Entity(tableName = "categories")
+data class FactCategory(@PrimaryKey var id: String, var title: String)

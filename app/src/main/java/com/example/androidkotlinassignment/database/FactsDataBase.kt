@@ -6,9 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.androidkotlinassignment.R
 import com.example.androidkotlinassignment.models.Fact
-import com.example.androidkotlinassignment.models.FactCategoryDB
+import com.example.androidkotlinassignment.models.FactCategory
 
-@Database(entities = [Fact::class, FactCategoryDB::class],version= 1)
+@Database(entities = [Fact::class, FactCategory::class], version = 1)
 abstract class FactsDataBase: RoomDatabase() {
     abstract fun factDao(): FactDAO
 
