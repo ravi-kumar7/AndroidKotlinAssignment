@@ -65,8 +65,8 @@ class FactsRepository(private val context: Context, private val factDAO: FactDAO
     /* function to create new network API request
      */
     fun createAPIRequestForDataSync() {
-        if (!NetworkUtility.internetCheck(context)) {
-            setStatus(context.getString(R.string.networkConnectivityError))
+        if (!NetworkUtility.isAPIAvailable(context)) {
+            setStatus(context.getString(R.string.serverIssue))
             return
         }
         val factAPIService = retrofit.create(FactAPIService::class.java)

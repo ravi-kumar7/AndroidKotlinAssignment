@@ -6,6 +6,7 @@ import android.net.Network
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidkotlinassignment.ui.fragments.FactsFragment
@@ -24,7 +25,6 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, FactsFragment.newInstance())
                 .commitNow()
         }
-
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         when {
@@ -34,20 +34,13 @@ class MainActivity : AppCompatActivity() {
                 val networkRequest = NetworkRequest.Builder().build()
                 connectivityManager.registerNetworkCallback(networkRequest, object :
                     ConnectivityManager.NetworkCallback() {
-
-                    override fun onUnavailable() {
-                        super.onUnavailable()
-                        viewModel.setStatusMsg(getString(R.string.networkConnectivityError))
-                    }
-
                     override fun onAvailable(network: Network) {
                         super.onAvailable(network)
-                        if (NetworkUtility.internetCheck(baseContext)) {
-                            syncDB()
-                        }
+                        syncDB()
                     }
                 })
             }
+            // To support Android versions below lollipop
             NetworkUtility.internetCheck(baseContext) -> {
                 syncDB()
             }
@@ -59,7 +52,10 @@ class MainActivity : AppCompatActivity() {
 
 
     fun syncDB() {
-        viewModel.syncDataFromAPI()
+        if (!viewModel.isDataSynced().value!!) {
+            Toast.makeText(this, getString(R.string.syncingData), Toast.LENGTH_LONG).show()
+            viewModel.syncDataFromAPI()
+        }
     }
 
 }

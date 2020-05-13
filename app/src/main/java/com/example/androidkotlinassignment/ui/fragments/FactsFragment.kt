@@ -53,12 +53,12 @@ class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         // Creating observers for live data
-        viewModel.section.observe(viewLifecycleOwner, Observer {
+        viewModel.getFactCategory().observe(viewLifecycleOwner, Observer {
             swipeRefreshLayout.isRefreshing = false
             if (it != null)
                 requireActivity().title = it.title
         })
-        viewModel.articles.observe(viewLifecycleOwner, Observer {
+        viewModel.getFacts().observe(viewLifecycleOwner, Observer {
             if (it.isEmpty()) {
                 loadingText.text = requireContext().getString(R.string.no_data)
                 progressBar.visibility = View.INVISIBLE
@@ -69,13 +69,18 @@ class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 factsListView.adapter = factAdapter
             }
         })
-        viewModel.statusMsg.observe(viewLifecycleOwner, Observer {
+        viewModel.getStatusMsg().observe(viewLifecycleOwner, Observer {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             swipeRefreshLayout.isRefreshing = false
         })
     }
 
     override fun onRefresh() {
+        Toast.makeText(
+            context,
+            requireContext().getString(R.string.syncingData),
+            Toast.LENGTH_SHORT
+        ).show()
         viewModel.syncDataFromAPI(true)
     }
 

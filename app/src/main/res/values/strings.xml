@@ -8,9 +8,11 @@
     <string name="imageMore">More</string>
     <string name="sharedPrefs">preferences</string>
     <string name="firstTimeDBLoaded">firstTimeDBLoaded</string>
-    <string name="networkConnectivityError">Unable to connect to server.</string>
+    <string name="networkConnectivityError">No internet connection</string>
+    <string name="syncingData">Syncing data with server</string>
     <string name="dataSyncSuccess">Data synced with the server.</string>
     <string name="loading">loading…</string>
     <string name="no_data">No data.</string>
     <string name="repository">repository</string>
+    <string name="serverIssue">Not able to connect to server.</string>
 </resources>
