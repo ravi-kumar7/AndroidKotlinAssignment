@@ -1,4 +1,4 @@
-package com.example.androidkotlinassignment.database
+package com.example.androidkotlinassignment.source.local
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

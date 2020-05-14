@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
+    @ExperimentalStdlibApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    @ExperimentalStdlibApi
     fun syncDB() {
         if (!viewModel.isDataSynced().value!!) {
             Toast.makeText(this, getString(R.string.syncingData), Toast.LENGTH_LONG).show()

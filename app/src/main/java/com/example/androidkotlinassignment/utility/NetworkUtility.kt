@@ -27,7 +27,6 @@ class NetworkUtility {
         fun isAPIAvailable(c: Context): Boolean {
             return try {
                 val ipAddr: InetAddress = InetAddress.getByName(c.getString(R.string.api_server))
-                //You can replace it with your name
                 ipAddr.hostAddress != ""
             } catch (e: Exception) {
                 false

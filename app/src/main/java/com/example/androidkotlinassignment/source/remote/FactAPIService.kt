@@ -1,4 +1,4 @@
-package com.example.androidkotlinassignment.network
+package com.example.androidkotlinassignment.source.remote
 
 
 import com.example.androidkotlinassignment.models.Model

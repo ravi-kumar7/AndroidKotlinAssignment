@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.androidkotlinassignment.R
 import com.example.androidkotlinassignment.adapters.FactAdapter
+import com.example.androidkotlinassignment.databinding.FactsFragmentBinding
 import com.example.androidkotlinassignment.models.Fact
 import com.example.androidkotlinassignment.viewmodels.MainViewModel
 
@@ -37,17 +38,17 @@ class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.main_fragment, container, false)
-        factsListView = view.findViewById(R.id.rv_facts_list)
+        val factsFragmentBinding = FactsFragmentBinding.inflate(inflater, container, false)
+        factsListView = factsFragmentBinding.rvFactsList
         factsListView.layoutManager = LinearLayoutManager(context)
         factsListView.setHasFixedSize(true)
-        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_view)
+        swipeRefreshLayout = factsFragmentBinding.swipeRefreshView
         swipeRefreshLayout.setOnRefreshListener(this)
 
-        progressBar = view.findViewById(R.id.progress_bar)
-        rlProgressView = view.findViewById(R.id.rl_progress_view)
-        loadingText = view.findViewById(R.id.tv_loading_text)
-        return view
+        progressBar = factsFragmentBinding.progressBar
+        rlProgressView = factsFragmentBinding.rlProgressView
+        loadingText = factsFragmentBinding.tvLoadingText
+        return factsFragmentBinding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -70,11 +71,16 @@ class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         })
         viewModel.getStatusMsg().observe(viewLifecycleOwner, Observer {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            swipeRefreshLayout.isRefreshing = false
+            if (it.isNotBlank()) {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                swipeRefreshLayout.isRefreshing = false
+            }
+            viewModel.setStatusMsg("")
+
         })
     }
 
+    @ExperimentalStdlibApi
     override fun onRefresh() {
         Toast.makeText(
             context,
