@@ -9,7 +9,7 @@ import com.example.androidkotlinassignment.models.Fact
 import com.example.androidkotlinassignment.models.FactCategory
 
 @Dao
-interface FactDAO{
+interface FactDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFact(Fact: Fact)
 

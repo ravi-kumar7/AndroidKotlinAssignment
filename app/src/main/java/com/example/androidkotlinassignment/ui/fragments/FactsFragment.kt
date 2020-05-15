@@ -1,5 +1,10 @@
 package com.example.androidkotlinassignment.ui.fragments
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,15 +14,17 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.androidkotlinassignment.MyApplication
 import com.example.androidkotlinassignment.R
 import com.example.androidkotlinassignment.adapters.FactAdapter
 import com.example.androidkotlinassignment.databinding.FactsFragmentBinding
 import com.example.androidkotlinassignment.models.Fact
+import com.example.androidkotlinassignment.utility.NetworkUtility
 import com.example.androidkotlinassignment.viewmodels.MainViewModel
 
 class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -33,11 +40,16 @@ class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var rlProgressView: RelativeLayout
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var factsList: List<Fact>
-    private val viewModel: MainViewModel by activityViewModels()
+
+    private val viewModel by viewModels<MainViewModel>() {
+        MainViewModel.FactsViewModelFactory((requireContext().applicationContext as MyApplication).factsDataRepository)
+    }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val factsFragmentBinding = FactsFragmentBinding.inflate(inflater, container, false)
         factsListView = factsFragmentBinding.rvFactsList
         factsListView.layoutManager = LinearLayoutManager(context)
@@ -51,8 +63,9 @@ class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         return factsFragmentBinding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    @ExperimentalStdlibApi
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         // Creating observers for live data
         viewModel.getFactCategory().observe(viewLifecycleOwner, Observer {
             swipeRefreshLayout.isRefreshing = false
@@ -63,7 +76,10 @@ class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             if (it.isEmpty()) {
                 loadingText.text = requireContext().getString(R.string.no_data)
                 progressBar.visibility = View.INVISIBLE
+                rlProgressView.visibility = View.VISIBLE
+                factsListView.visibility = View.GONE
             } else {
+                rlProgressView.visibility = View.GONE
                 factsListView.visibility = View.VISIBLE
                 factsList = it
                 factAdapter = FactAdapter(factsList)
@@ -78,6 +94,39 @@ class FactsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             viewModel.setStatusMsg("")
 
         })
+
+        val connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        when {
+            // Register network callback to monitor network changes.
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
+
+                val networkRequest = NetworkRequest.Builder().build()
+                connectivityManager.registerNetworkCallback(networkRequest, object :
+                    ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) {
+                        super.onAvailable(network)
+                        syncDB()
+                    }
+                })
+            }
+            // To support Android versions below lollipop
+            NetworkUtility.internetCheck(requireContext()) -> {
+                syncDB()
+            }
+            else -> {
+                viewModel.setStatusMsg(getString(R.string.networkConnectivityError))
+            }
+        }
+    }
+
+    @ExperimentalStdlibApi
+    fun syncDB() {
+        if (!viewModel.isDataSynced().value!!) {
+            Toast.makeText(requireContext(), getString(R.string.syncingData), Toast.LENGTH_LONG)
+                .show()
+            viewModel.syncDataFromAPI()
+        }
     }
 
     @ExperimentalStdlibApi

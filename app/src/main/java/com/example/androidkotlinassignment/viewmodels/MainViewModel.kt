@@ -1,36 +1,22 @@
 package com.example.androidkotlinassignment.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.androidkotlinassignment.models.Fact
 import com.example.androidkotlinassignment.models.FactCategory
-import com.example.androidkotlinassignment.source.FactsDataRepository
-import com.example.androidkotlinassignment.source.local.FactsDataBase
-import com.example.androidkotlinassignment.source.local.LocalDataSource
-import com.example.androidkotlinassignment.source.remote.RemoteDataSource
+import com.example.androidkotlinassignment.source.IFactsDataRepository
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(private val factsDataRepository: IFactsDataRepository) : ViewModel() {
 
-
-    private val factDataRepository: FactsDataRepository
-    private val factCategory: LiveData<FactCategory>
-    private val facts: LiveData<List<Fact>>
-    private val statusMsg: MutableLiveData<String>
-    private val isDataSynced: MutableLiveData<Boolean>
+    private val factCategory: LiveData<FactCategory> = factsDataRepository.factCategory
+    private val facts: LiveData<List<Fact>> = factsDataRepository.allFacts
+    private val statusMsg: MutableLiveData<String> = factsDataRepository.status
+    private val isDataSynced: MutableLiveData<Boolean> = factsDataRepository.isDataSynced
 
     init {
-        val factDAO = FactsDataBase.getDatabase(application)!!.factDao()
-        val localDataSource = LocalDataSource(factDAO)
-        val remoteDataSource = RemoteDataSource(application.applicationContext)
-        factDataRepository = FactsDataRepository(localDataSource, remoteDataSource)
-        factCategory = factDataRepository.getFactCategory()
-        facts = factDataRepository.getFacts()
-        statusMsg = factDataRepository.getStatus()
-        isDataSynced = factDataRepository.getIsDataSynced()
+//        val factDAO = FactsDataBase.getDatabase(application)!!.factDao()
+//        val localDataSource = LocalDataSource(factDAO)
+//        val remoteDataSource = RemoteDataSource(application.applicationContext)
     }
 
     fun getFactCategory(): LiveData<FactCategory> {
@@ -50,7 +36,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-
     /* function to call repository to sync offline data using Network API
       * @param swiped: a Boolean value. True if user has swiped down to refresh the list, otherwise false.
       */
@@ -58,13 +43,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun syncDataFromAPI(swiped: Boolean = false) {
         if (!isDataSynced.value!! || swiped) {
             viewModelScope.launch {
-                factDataRepository.updateDataFromAPIServer()
+                factsDataRepository.updateDataFromAPIServer()
             }
         }
     }
 
     fun setStatusMsg(status: String) {
-        factDataRepository.setStatus(status)
+        factsDataRepository.setStatus(status)
     }
 
+
+    @Suppress("UNCHECKED_CAST")
+    class FactsViewModelFactory(
+        private val factsDataRepository: IFactsDataRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
+            (MainViewModel(factsDataRepository) as T)
+    }
 }

@@ -9,7 +9,7 @@ import com.example.androidkotlinassignment.models.Fact
 import com.example.androidkotlinassignment.models.FactCategory
 
 @Database(entities = [Fact::class, FactCategory::class], version = 1)
-abstract class FactsDataBase: RoomDatabase() {
+abstract class FactsDataBase : RoomDatabase() {
     abstract fun factDao(): FactDAO
 
     companion object {
@@ -17,13 +17,17 @@ abstract class FactsDataBase: RoomDatabase() {
         private var factsDatabaseInstance: FactsDataBase? = null
 
         internal fun getDatabase(context: Context): FactsDataBase? {
-            if(factsDatabaseInstance ==null)
-            {
-                synchronized(FactsDataBase::class.java){
-                    if(factsDatabaseInstance ==null) {
-                        factsDatabaseInstance = Room.databaseBuilder(context.applicationContext, FactsDataBase::class.java, context.getString(
-                            R.string.repository))
-                        .build()
+            if (factsDatabaseInstance == null) {
+                synchronized(FactsDataBase::class.java) {
+                    if (factsDatabaseInstance == null) {
+                        factsDatabaseInstance = Room.databaseBuilder(
+                            context.applicationContext,
+                            FactsDataBase::class.java,
+                            context.getString(
+                                R.string.repository
+                            )
+                        )
+                            .build()
                     }
                 }
             }
